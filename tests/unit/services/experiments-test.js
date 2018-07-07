@@ -29,3 +29,9 @@ test('it knows how to setup a/b experiments with no variations', function(assert
   service.setup('testNoVariations');
   assert.ok(['newVariation', 'control'].indexOf(service.getVariation('testNoVariations')) !== -1);
 });
+
+test('it returns a promise that has the variation in it', async function(assert) {
+  let service = this.subject();
+  let variation = await service.setup('testHere', {a: 100});
+  assert.equal(variation, 'a');
+});
