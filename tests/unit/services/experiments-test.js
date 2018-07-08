@@ -84,4 +84,10 @@ module('Unit | Service | experiments', function(hooks) {
     assert.notOk(service.isEnabled('test1', 'b'));
   });
 
+  test("it knows how to handle situations where variants don't add up to 100", function(assert) {
+    let service = this.owner.lookup('service:experiments');
+    service.setup('test1', {a: 0, b: 0});
+    assert.ok(['a', 'b'].indexOf(service.getVariation('test1')) !== -1);
+  })
+
 });

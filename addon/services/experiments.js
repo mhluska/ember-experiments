@@ -138,6 +138,14 @@ export default Service.extend({
     let variationChoice = Math.floor(Math.random() * 101);
     let sortedVariations = this._sortedVariations(variations);
     let result = sortedVariations.find(variation => variation[1] >= variationChoice);
+
+    if (!result) {
+      // this can only really happen if the passed in variant weights don't add up to 100...
+      // what were they thinking?!?
+      // oh well, select a random variant for the folks
+      result = sortedVariations[Math.floor(Math.random() * sortedVariations.length)]
+    }
+
     return result[0];
   },
 
