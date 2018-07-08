@@ -70,7 +70,12 @@ export default Service.extend({
     this.notifyPropertyChange(camelizeName(expName, variation));
   },
 
-  isEnabled(experimentAndVariation) {
+  isEnabled(experimentName, variationName) {
+    let experiments = this.getExperiments();
+    return experiments[experimentName] === variationName;
+  },
+
+  isEnabledConcatted(experimentAndVariation) {
     let experiments = this.getExperiments();
     let result = keys(experiments).find(key => {
       return experimentAndVariation === camelizeName(key, experiments[key]);
@@ -126,7 +131,7 @@ export default Service.extend({
 
   unknownProperty(key) {
     let expKey = camelizeName(key);
-    return this.isEnabled(expKey);
+    return this.isEnabledConcatted(expKey);
   },
 
   _determineVariation(variations = {}) {

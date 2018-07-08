@@ -76,4 +76,12 @@ module('Unit | Service | experiments', function(hooks) {
     service.clearExperiments();
     assert.deepEqual(service.getExperiments(), {});
   });
+
+  test('it knows how to respond to isEnabled', function(assert) {
+    let service = this.owner.lookup('service:experiments');
+    service.enable('test1', 'a');
+    assert.ok(service.isEnabled('test1', 'a'));
+    assert.notOk(service.isEnabled('test1', 'b'));
+  });
+
 });
