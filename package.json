@@ -1,13 +1,15 @@
 {
   "name": "ember-experiments",
-  "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "version": "0.0.1",
+  "description": "An Ember addon for adding A/B and Multivariate testing to your app",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "split testing",
+    "a/b testing"
   ],
-  "repository": "",
+  "repository": "https://github.com/outdoorsy/ember-experiments",
   "license": "MIT",
-  "author": "",
+  "author": "Outdoorsy",
   "directories": {
     "doc": "doc",
     "test": "tests"
