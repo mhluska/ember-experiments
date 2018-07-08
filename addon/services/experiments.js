@@ -90,21 +90,6 @@ export default Service.extend({
   },
 
   /**
-   * Internal: Check for concatted experiment/variant name combinations
-   *
-   * @param {String} experimentAndVariation
-   * @returns {Boolean}
-   */
-  isEnabledConcatted(experimentAndVariation) {
-    let experiments = this.getExperiments();
-    let result = keys(experiments).find(key => {
-      return experimentAndVariation === camelizeName(key, experiments[key]);
-    });
-
-    return typeof(result) !== 'undefined';
-  },
-
-  /**
    * Returns the selected variant for a given experiment
    *
    * @param {String} [expName='']
@@ -183,9 +168,16 @@ export default Service.extend({
    */
   unknownProperty(key) {
     let expKey = camelizeName(key);
-    return this.isEnabledConcatted(expKey);
+    return this._isEnabledConcatted(expKey);
   },
 
+  /**
+   * Internal - Takes a list of variations and weights and determins which variation this specific user gets
+   *
+   *
+   * @param {Object} [variations={}]
+   * @returns {String}
+   */
   _determineVariation(variations = {}) {
     let variationChoice = Math.floor(Math.random() * 101);
     let sortedVariations = this._sortedVariations(variations);
@@ -201,6 +193,12 @@ export default Service.extend({
     return result[0];
   },
 
+  /**
+   * Internal - Takes a variations object and returns a sorted variations array
+   *
+   * @param {Object} [variations={}]
+   * @returns {Array}
+   */
   _sortedVariations(variations = {}) {
     let sortedVariations = [];
     let currentMax = 0;
@@ -210,5 +208,20 @@ export default Service.extend({
       sortedVariations.push([key, currentMax]);
     });
     return sortedVariations;
-  }
+  },
+
+  /**
+   * Internal: Check for concatted experiment/variant name combinations
+   *
+   * @param {String} experimentAndVariation
+   * @returns {Boolean}
+   */
+  _isEnabledConcatted(experimentAndVariation) {
+    let experiments = this.getExperiments();
+    let result = keys(experiments).find(key => {
+      return experimentAndVariation === camelizeName(key, experiments[key]);
+    });
+
+    return typeof(result) !== 'undefined';
+  },
 });
