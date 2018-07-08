@@ -2,11 +2,19 @@ import Service from '@ember/service';
 import camelizeName from 'ember-experiments/utils/camelize-name';
 import { Promise }  from 'rsvp';
 import { inject as service } from '@ember/service';
+let {keys} = Object;
 
 export default Service.extend({
   cookieName: 'ember-experiments',
+  cookieMaxAge: 31536000, // default 1 year
+  currentExperiments: null,
 
   cookies: service(),
+
+  init() {
+    this._super(arguments);
+    this.getExperiments();
+  },
 
   /**
    * Define a test and pass in possible variations
@@ -23,10 +31,16 @@ export default Service.extend({
         return;
       }
 
+      // check if this experiment is already setup
+      if (this.alreadyDefined(expName)) {
+        resolve(this.getVariation(expName));
+        return;
+      }
+
       expName = camelizeName(expName);
 
       // normalize the variations with a default a/b test
-      if (Object.keys(variations).length === 0) {
+      if (keys(variations).length === 0) {
         variations = {
           control: 50,
           newVariation: 50
@@ -52,14 +66,14 @@ export default Service.extend({
     let experiments = this.getExperiments();
     experiments[expName] = variation;
     this.setExperiments(experiments);
+    // notify property change
+    this.notifyPropertyChange(camelizeName(expName, variation));
   },
 
   isEnabled(experimentAndVariation) {
     let experiments = this.getExperiments();
-    let result = Object.keys(experiments).find(key => {
-      let value = camelizeName(experiments[key]);
-      key = camelizeName(key);
-      return experimentAndVariation === `${key}${value}`;
+    let result = keys(experiments).find(key => {
+      return experimentAndVariation === camelizeName(key, experiments[key]);
     });
 
     return typeof(result) !== 'undefined';
@@ -80,9 +94,15 @@ export default Service.extend({
   },
 
   getExperiments() {
-    let experiments = this.get('cookies').read(this.cookieName);
+    let experiments = this.get('currentExperiments');
+
+    if (experiments) {
+      return experiments;
+    }
+
+    experiments = this.get('cookies').read(this.cookieName);
     if (!experiments) {
-      return {};
+      return this.set('currentExperiments', {});
     }
 
     try {
@@ -91,12 +111,17 @@ export default Service.extend({
       experiments = {};
     }
 
-    return experiments;
+    return this.set('currentExperiments', experiments);
   },
 
   setExperiments(experiments = {}) {
+    this.set('currentExperiments', experiments);
     experiments = encodeURI(JSON.stringify(experiments));
     this.get('cookies').write(this.cookieName, experiments, {maxAge: this.cookieMaxAge});
+  },
+
+  clearExperiments() {
+    this.setExperiments();
   },
 
   unknownProperty(key) {
@@ -114,7 +139,7 @@ export default Service.extend({
   _sortedVariations(variations = {}) {
     let sortedVariations = [];
     let currentMax = 0;
-    Object.keys(variations).sort().forEach(key => {
+    keys(variations).sort().forEach(key => {
       let amount = variations[key] || 0;
       currentMax = currentMax + amount;
       sortedVariations.push([key, currentMax]);
