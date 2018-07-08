@@ -21,7 +21,7 @@ export default Service.extend({
    *
    * @param {String} expName The name for your experiment
    * @param {Object} [variations={}] The variations you want to test
-   * @returns
+   * @returns {Promise}
    */
   setup(expName, variations = {}) {
     return new Promise((resolve, reject) => {
@@ -55,6 +55,13 @@ export default Service.extend({
     });
   },
 
+  /**
+   * Force a specific experiment to a specific variant
+   *
+   * @param {String} expName
+   * @param {String} variation
+   * @returns {Null}
+   */
   enable(expName, variation) {
     if (!expName || !variation) {
       return;
@@ -70,11 +77,24 @@ export default Service.extend({
     this.notifyPropertyChange(camelizeName(expName, variation));
   },
 
+  /**
+   * Check if an exerpiment is currently set to a specified variant
+   *
+   * @param {String} experimentName
+   * @param {String} variationName
+   * @returns {Boolean}
+   */
   isEnabled(experimentName, variationName) {
     let experiments = this.getExperiments();
     return experiments[experimentName] === variationName;
   },
 
+  /**
+   * Internal: Check for concatted experiment/variant name combinations
+   *
+   * @param {String} experimentAndVariation
+   * @returns {Boolean}
+   */
   isEnabledConcatted(experimentAndVariation) {
     let experiments = this.getExperiments();
     let result = keys(experiments).find(key => {
@@ -84,11 +104,23 @@ export default Service.extend({
     return typeof(result) !== 'undefined';
   },
 
+  /**
+   * Returns the selected variant for a given experiment
+   *
+   * @param {String} [expName='']
+   * @returns {String}
+   */
   getVariation(expName = '') {
     expName = camelizeName(expName);
     return this.getExperiments()[expName];
   },
 
+  /**
+   * Tells you if a test has already been setup
+   *
+   * @param {String} expName
+   * @returns {Boolean}
+   */
   alreadyDefined(expName) {
     if (!expName) {
       return;
@@ -98,6 +130,12 @@ export default Service.extend({
     return typeof(this.getExperiments()[expName]) !== 'undefined';
   },
 
+  /**
+   * Returns a Javascript Object with existing experiments as keys
+   * and their selected variants as values
+   *
+   * @returns {Object}
+   */
   getExperiments() {
     let experiments = this.get('currentExperiments');
 
@@ -119,16 +157,30 @@ export default Service.extend({
     return this.set('currentExperiments', experiments);
   },
 
+  /**
+   * Allows you to force all experiments to provided values
+   *
+   * @param {Object} [experiments={}]
+   */
   setExperiments(experiments = {}) {
     this.set('currentExperiments', experiments);
     experiments = encodeURI(JSON.stringify(experiments));
     this.get('cookies').write(this.cookieName, experiments, {maxAge: this.cookieMaxAge});
   },
 
+  /**
+   * Clears all experiments
+   */
   clearExperiments() {
     this.setExperiments();
   },
 
+  /**
+   * Internal - used to route unknown requests to check for experiment variations
+   *
+   * @param {String} key
+   * @returns {String}
+   */
   unknownProperty(key) {
     let expKey = camelizeName(key);
     return this.isEnabledConcatted(expKey);
