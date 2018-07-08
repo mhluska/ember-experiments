@@ -50,9 +50,9 @@ In the above example, 50% of users will receive variant a and 50% will receive v
 You also have access to experiment selections by concatting them together as camelCase.  For example, if your experiment is named `user test 1` and your variations are `a` and `b`, you could access them in templates as:
 
 ```handlebars
-  {{#if userTest1A}}
+  {{#if (experiment 'userTest1' 'a')}}
     Here we are in variation A
-  {{else if userTest1B}}
+  {{else if (experiment 'userTest1' 'b')}}
     Here we are in variation B
   {{/if}}
 ```
