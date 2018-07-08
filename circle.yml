@@ -1,0 +1,122 @@
+version: 2.0
+references:
+  container_config: &container_config
+    docker:
+      - image: jheth/circleci-node10-browsers-npm61
+        environment:
+          JOBS: 2
+    working_directory: ~/ember-experiments
+
+  restore_repo: &restore_repo
+    restore_cache:
+      keys:
+        - v2-repo-{{ .Branch }}-{{ .Revision }}
+        - v2-repo-{{ .Branch }}
+        - v2-repo
+
+  restore_node_modules: &restore_node_modules
+    restore_cache:
+      keys:
+        - v1-dependencies-{{ checksum "package.json" }}
+        - v1-dependencies
+
+jobs:
+  checkout_code:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - checkout
+      - save_cache:
+          key: v2-repo-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - .
+
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run: git config user.email "$BOT_GH_EMAIL" > /dev/null 2>&1
+      - run: git config user.name "$BOT_GH_NAME" > /dev/null 2>&1
+      - run: npm --version
+      - run: npm ci
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+  deploy_master:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: echo 'export PATH=~/core-addon/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run: git config user.email "$BOT_GH_EMAIL" > /dev/null 2>&1
+      - run: git config user.name "$BOT_GH_NAME" > /dev/null 2>&1
+      - run: mkdir ~/.ssh
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run: git status
+      - run:
+          name: Deploy Master CI
+          command: npm run deploy:ci
+      - run:
+          name: NPM PUBLISH
+          command: npm publish
+
+  test-release:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: PERCY_ENABLE=0 node_modules/.bin/ember try:one ember-release --skip-cleanup
+
+  test-beta:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: PERCY_ENABLE=0 node_modules/.bin/ember try:one ember-beta --skip-cleanup
+
+  test-canary:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: PERCY_ENABLE=0 node_modules/.bin/ember try:one ember-canary --skip-cleanup
+
+  test-default:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: PERCY_ENABLE=1 node_modules/.bin/ember try:one ember-default --skip-cleanup
+
+workflows:
+  version: 2
+
+  build_test:
+    jobs:
+      - checkout_code
+
+      - test-default:
+          requires:
+            - checkout_code
+
+      - test-release:
+          requires:
+            - checkout_code
+
+      - test-beta:
+          requires:
+            - checkout_code
+
+      - test-canary:
+          requires:
+            - checkout_code
+
+      - deploy_master:
+          requires:
+            - test-default
+            - test-release
+            - test-beta
+          filters:
+            branches:
+              only: master

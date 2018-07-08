@@ -76,7 +76,6 @@ In addition to traditional A/B testing, you can also specify multivariate tests 
       });
     }
   });
-
 ```
 
 In the above example, 10% of users will get variant a, 50% will get variant b and 40% will get variant c
