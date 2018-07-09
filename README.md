@@ -60,12 +60,13 @@ You also have access to experiment selections by concatting them together as cam
 You also have access to computed vars representing each test variation:
 
 ```handlebars
-  {{#if userTest1A}}
+  {{#if experiments.userTest1A}}
     Here we are in variation A
-  {{else if userTest1B}}
+  {{else if experiments.userTest1B}}
     Here we are in variation B
   {{/if}}
 ```
+
 
 ### Multivariate Testing
 In addition to traditional A/B testing, you can also specify multivariate tests as well (A/B/C/D)
