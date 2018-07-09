@@ -18,8 +18,13 @@
     "build": "ember build",
     "lint:js": "eslint .",
     "start": "ember serve",
-    "test": "ember test",
-    "test:all": "ember try:each"
+    "test": "ember try:each",
+    "test:ci": "ember try:each",
+    "deploy": "npm run version:patch && npm run push:git",
+    "deploy:ci": "npm run version:patchCI && npm run push:git",
+    "version:patch": "npm version patch",
+    "version:patchCI": "npm version patch -m 'CI deploy so [skip ci]'",
+    "push:git": "git push --tags origin HEAD:master"
   },
   "dependencies": {
     "ember-cli-babel": "^6.6.0",
