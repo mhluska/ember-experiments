@@ -89,6 +89,27 @@ jobs:
       - *restore_node_modules
       - run: PERCY_ENABLE=1 node_modules/.bin/ember try:one ember-default --skip-cleanup
 
+  test-lts-2.12:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: node_modules/.bin/ember try:one ember-lts-2.12 --skip-cleanup
+
+  test-lts-2.16:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: node_modules/.bin/ember try:one ember-lts-2.16 --skip-cleanup
+
+  test-lts-2.18:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: node_modules/.bin/ember try:one ember-lts-2.18 --skip-cleanup
+
 workflows:
   version: 2
 
@@ -104,6 +125,18 @@ workflows:
           requires:
             - checkout_code
 
+      - test-lts-2.12:
+          requires:
+            - install_dependencies
+
+      - test-lts-2.16:
+          requires:
+            - install_dependencies
+
+      - test-lts-2.18:
+          requires:
+            - install_dependencies
+
       - test-beta:
           requires:
             - checkout_code
@@ -116,6 +149,9 @@ workflows:
           requires:
             - test-default
             - test-release
+            - test-lts-2.12
+            - test-lts-2.16
+            - test-lts-2.18
             - test-beta
           filters:
             branches:
