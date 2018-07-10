@@ -66,28 +66,49 @@ jobs:
     steps:
       - *restore_repo
       - *restore_node_modules
-      - run: PERCY_ENABLE=0 node_modules/.bin/ember try:one ember-release --skip-cleanup
+      - run: node_modules/.bin/ember try:one ember-release --skip-cleanup
 
   test-beta:
     <<: *container_config
     steps:
       - *restore_repo
       - *restore_node_modules
-      - run: PERCY_ENABLE=0 node_modules/.bin/ember try:one ember-beta --skip-cleanup
+      - run: node_modules/.bin/ember try:one ember-beta --skip-cleanup
 
   test-canary:
     <<: *container_config
     steps:
       - *restore_repo
       - *restore_node_modules
-      - run: PERCY_ENABLE=0 node_modules/.bin/ember try:one ember-canary --skip-cleanup
+      - run: node_modules/.bin/ember try:one ember-canary --skip-cleanup
 
   test-default:
     <<: *container_config
     steps:
       - *restore_repo
       - *restore_node_modules
-      - run: PERCY_ENABLE=1 node_modules/.bin/ember try:one ember-default --skip-cleanup
+      - run: node_modules/.bin/ember try:one ember-default --skip-cleanup
+
+  test-lts-2.12:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: node_modules/.bin/ember try:one ember-lts-2.12 --skip-cleanup
+
+  test-lts-2.16:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: node_modules/.bin/ember try:one ember-lts-2.16 --skip-cleanup
+
+  test-lts-2.18:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - *restore_node_modules
+      - run: node_modules/.bin/ember try:one ember-lts-2.18 --skip-cleanup
 
   test-lts-2.12:
     <<: *container_config
@@ -127,15 +148,15 @@ workflows:
 
       - test-lts-2.12:
           requires:
-            - install_dependencies
+            - checkout_code
 
       - test-lts-2.16:
           requires:
-            - install_dependencies
+            - checkout_code
 
       - test-lts-2.18:
           requires:
-            - install_dependencies
+            - checkout_code
 
       - test-beta:
           requires:
