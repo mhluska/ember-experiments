@@ -167,7 +167,7 @@ export default Metrics.extend({
 * `clearExperiments()` Clear all experiments
 
 ## Special Thanks
-We've been A/B testing internally at [Outdoorsy](https://www.outdoorsy.com) for quite some time now using a hodgepodge of internal tools on top of [Ember Feature Flags](https://github.com/kategengler/ember-feature-flags). It served us well, but was time for some changes to make it easier to track experiments and perform more complicated split testing.  Massive thanks to Kate for the awesome addon that got us started!
+We've been A/B testing internally at [Outdoorsy](https://www.outdoorsy.com) for quite some time now using a hodgepodge of internal tools on top of [Ember Feature Flags](https://github.com/kategengler/ember-feature-flags). It served us well, but was time for some changes to make it easier to track experiments and perform more complicated split testing.  Massive thanks to [Katie](https://github.com/kategengler) for the awesome addon that got us started!
 
 ## Contributing
 Package uses npm 6.1+ for dependency management. If you're adding a new dependency, please make sure you run `npm i` before pushing back upstream.
