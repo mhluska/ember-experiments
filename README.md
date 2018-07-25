@@ -138,16 +138,21 @@ Once that's done, you can then activate any experiment by adding `?experiments=e
 
 ```javascript
 // app/services/metrics
-
 import Metrics from 'ember-metrics/services/metrics';
+import { inject as service } from '@ember/service';
 
 export default Metrics.extend({
+
+  experiments: service(),
+
   trackEvent(...args) {
     let eventData = args[args.length - 1];
     args[args.length - 1] = Object.assign({}, eventData, this.get('experiments').getExperiments());
     this._super(...args);
   }
+
 });
+
 ```
 
 
