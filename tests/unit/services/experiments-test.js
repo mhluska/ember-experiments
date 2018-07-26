@@ -1,19 +1,10 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import setupExperiments from 'ember-experiments/test-support/setup-experiments';
 
 module('Unit | Service | experiments', function(hooks) {
   setupTest(hooks);
-
-  hooks.beforeEach(function() {
-    let service = this.owner.lookup('service:experiments');
-    service.clearExperiments();
-  });
-
-  // Replace this with your real tests.
-  test('it exists', function(assert) {
-    let service = this.owner.lookup('service:experiments');
-    assert.ok(service);
-  });
+  setupExperiments(hooks);
 
   test('it knows how to sort variations', function(assert) {
     let service = this.owner.lookup('service:experiments');

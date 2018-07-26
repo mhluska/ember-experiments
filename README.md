@@ -155,6 +155,26 @@ export default Metrics.extend({
 
 ```
 
+## Test Support
+`setupExperiments` We provide `this.experiments` in your tests and also clean up experiments after each test.
+
+```js
+import setupExperiments from 'ember-experiments/test-support/setup-experiments';
+
+module('Acceptance | experiments', function(hooks) {
+  setupApplicationTest(hooks);
+  setupExperiments(hooks);
+
+  test('experiments in testing me knees', async function(assert) {
+    this.experiments.set('knee', 'left');
+    await visit('/activate');
+
+    let service = this.owner.lookup('service:experiments');
+
+    assert.ok(this.experiments.isEnabled('knee', 'left'));
+  });
+}})
+```
 
 ### Good To Know's
 * It's safe to setup the same test as many times as you'd like, the test is enabled and a variant is selected on the first `setup`.  Subsequent setups will abort immediately and return the originally selected variant.
