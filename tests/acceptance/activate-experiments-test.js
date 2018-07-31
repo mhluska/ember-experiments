@@ -7,14 +7,14 @@ module('Acceptance | activate experiments', function(hooks) {
   setupApplicationTest(hooks);
   setupExperiments(hooks);
 
-  test('visiting /activate', async function(assert) {
+  test('visiting /activate can set an experiments', async function(assert) {
     await visit('/activate?experiments=test1/variation1');
     let service = this.owner.lookup('service:experiments');
 
     assert.equal(service.getVariation('test1'), 'variation1');
   });
 
-  test('visiting /activate', async function(assert) {
+  test('visiting /activate can set two experiments', async function(assert) {
     await visit('/activate?experiments=test1/variation1,test2/variation2');
     let service = this.owner.lookup('service:experiments');
 
