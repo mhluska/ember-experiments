@@ -1,19 +1,24 @@
-import Service from '@ember/service';
-import camelizeName from 'ember-experiments/utils/camelize-name';
 import { Promise }  from 'rsvp';
+import Service from '@ember/service';
 import { inject as service } from '@ember/service';
-let {keys} = Object;
+import isTesting from 'ember-experiments/utils/is-testing';
+import camelizeName from 'ember-experiments/utils/camelize-name';
+
+
+let { keys } = Object;
 
 export default Service.extend({
   cookieName: 'ember-experiments',
   cookieMaxAge: 31536000, // default 1 year
   currentExperiments: null,
 
+
   cookies: service(),
 
   init() {
     this._super(arguments);
     this.getExperiments();
+    this.isTesting = isTesting(this);
   },
 
   /**
@@ -49,6 +54,11 @@ export default Service.extend({
 
       // select the variation we want to use
       let variation = this._determineVariation(variations);
+
+      // when environment === test us the inTesting variation
+      if (this.isTesting && variations.inTesting) {
+        variation = variations.inTesting;
+      }
 
       this.enable(expName, variation);
       resolve(variation);
@@ -150,6 +160,9 @@ export default Service.extend({
   setExperiments(experiments = {}) {
     this.set('currentExperiments', experiments);
     experiments = encodeURI(JSON.stringify(experiments));
+
+    if ( this.isTesting ) { return; }
+
     this.get('cookies').write(this.cookieName, experiments, {
       maxAge: this.cookieMaxAge,
       path: '/'
@@ -182,6 +195,10 @@ export default Service.extend({
    * @returns {String}
    */
   _determineVariation(variations = {}) {
+    if( !this.isTesting && variations.inTesting ) {
+      delete variations.inTesting;
+    }
+
     let variationChoice = Math.floor(Math.random() * 101);
     let sortedVariations = this._sortedVariations(variations);
     let result = sortedVariations.find(variation => variation[1] >= variationChoice);

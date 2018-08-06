@@ -79,6 +79,32 @@ module('Unit | Service | experiments', function(hooks) {
     let service = this.owner.lookup('service:experiments');
     service.setup('test1', {a: 0, b: 0});
     assert.ok(['a', 'b'].indexOf(service.getVariation('test1')) !== -1);
-  })
+  });
+
+  test("it should never set inTesting as a variations when environment is not testing", function(assert) {
+    let service = this.owner.lookup('service:experiments');
+
+    service.set('isTesting', false);
+    service.setup('envTest', {
+      a: 50,
+      b: 50,
+      inTesting: 'control'
+    });
+
+    assert.ok(service.getVariation('envTest') !== 'control');
+  });
+
+  test("it should never set inTesting as a variations when environment is not testing", function(assert) {
+    let service = this.owner.lookup('service:experiments');
+
+    service.setup('test1', {
+      a: 50,
+      b: 50,
+      inTesting: 'control'
+    });
+
+    service.enable('test1', 'a');
+    assert.ok(service.getVariation('test1') === 'a');
+  });
 
 });
