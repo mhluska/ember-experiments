@@ -44,7 +44,8 @@ module('Acceptance | activate experiments', function(hooks) {
   test('passing inTesting variation should be set in test environment', async function(assert) {
     this.experiments.setup('envTest', {
       control: 50,
-      test3: 50,
+      test3: 50
+    }, {
       inTesting: 'control'
     });
 

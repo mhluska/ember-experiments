@@ -1,6 +1,6 @@
 {
   "name": "ember-experiments",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "An Ember addon for adding A/B and Multivariate testing to your app",
   "keywords": [
     "ember-addon",

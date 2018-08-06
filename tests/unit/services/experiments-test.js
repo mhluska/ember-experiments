@@ -88,6 +88,7 @@ module('Unit | Service | experiments', function(hooks) {
     service.setup('envTest', {
       a: 50,
       b: 50,
+    }, {
       inTesting: 'control'
     });
 
@@ -99,7 +100,8 @@ module('Unit | Service | experiments', function(hooks) {
 
     service.setup('test1', {
       a: 50,
-      b: 50,
+      b: 50
+    }, {
       inTesting: 'control'
     });
 

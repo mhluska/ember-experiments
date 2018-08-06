@@ -176,7 +176,7 @@ module('Acceptance | experiments', function(hooks) {
 }})
 ```
 
-By can pass an `inTesting` variation to your `experiments.setup` hash your test suite will use that variation unless overridden by enabling another variation. In the example below `control` will be the variation used in your test suite. You're able to override the `inTesting` variation by using `enable('experimentName', 'variation')
+By can pass an options hash with `inTesting` to your `experiments.setup` hash your test suite will use that variation unless overridden by enabling another variation. In the example below `control` will be the variation used in your test suite. You're able to override the `inTesting` variation by using `this.experiments.enable('experimentName', 'variation')`
 
 
 ```js
@@ -185,7 +185,8 @@ setupController(controller, model) {
 
   this.get('experiments').setup('experimentName', {
     control: 50,
-    enabled: 50,
+    enabled: 50
+  }, {
     inTesting: 'control'
   });
 }

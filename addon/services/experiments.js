@@ -28,7 +28,7 @@ export default Service.extend({
    * @param {Object} [variations={}] The variations you want to test
    * @returns {Promise}
    */
-  setup(expName, variations = {}) {
+  setup(expName, variations = {}, options = {}) {
     return new Promise((resolve, reject) => {
       // if we don't have an experiment name, we don't know what to setup!
       if (!expName) {
@@ -56,8 +56,8 @@ export default Service.extend({
       let variation = this._determineVariation(variations);
 
       // when environment === test us the inTesting variation
-      if (this.isTesting && variations.inTesting) {
-        variation = variations.inTesting;
+      if (this.isTesting && options.inTesting) {
+        variation = options.inTesting;
       }
 
       this.enable(expName, variation);
@@ -195,10 +195,6 @@ export default Service.extend({
    * @returns {String}
    */
   _determineVariation(variations = {}) {
-    if( !this.isTesting && variations.inTesting ) {
-      delete variations.inTesting;
-    }
-
     let variationChoice = Math.floor(Math.random() * 101);
     let sortedVariations = this._sortedVariations(variations);
     let result = sortedVariations.find(variation => variation[1] >= variationChoice);
