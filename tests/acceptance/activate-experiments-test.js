@@ -40,4 +40,18 @@ module('Acceptance | activate experiments', function(hooks) {
     assert.ok(service.isEnabled('test2', 'variation2'));
     assert.notOk(service.isEnabled('test1', 'variation1'));
   });
+
+  test('passing inTesting variation should be set in test environment', async function(assert) {
+    this.experiments.setup('envTest', {
+      control: 50,
+      test3: 50
+    }, {
+      inTesting: 'control'
+    });
+
+    await visit('/activate');
+    let service = this.owner.lookup('service:experiments');
+
+    assert.ok(service.isEnabled('envTest', 'control'));
+  });
 });
