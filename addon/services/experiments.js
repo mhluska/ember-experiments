@@ -161,8 +161,6 @@ export default Service.extend({
     this.set('currentExperiments', experiments);
     experiments = encodeURI(JSON.stringify(experiments));
 
-    if ( this.isTesting ) { return; }
-
     this.get('cookies').write(this.cookieName, experiments, {
       maxAge: this.cookieMaxAge,
       path: '/'
