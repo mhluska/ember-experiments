@@ -88,7 +88,7 @@ export default Service.extend({
   },
 
   /**
-   * Check if an exerpiment is currently set to a specified variant
+   * Check if an experiment is currently set to a specified variant
    *
    * @param {String} experimentName
    * @param {String} variationName
