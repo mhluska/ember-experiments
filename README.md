@@ -22,7 +22,7 @@ A/B testing allows you to split your audience into 2 test groups
       this._super(controller, model);
 
       this.get('experiments').setup('experimentName', {
-        a: 50, // the provided int determins what percentage of users should receive this variation
+        a: 50, // the provided int determines what percentage of users should receive this variation
         b: 50
       });
     }
